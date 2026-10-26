@@ -3,6 +3,7 @@ import { connection } from "next/server"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import SideBar from "@/components/sideBar"
+import Loader from "@/components/Loader"
 
 type children = {
     children: React.ReactNode;
@@ -28,7 +29,7 @@ const ProtectedContent = async({children}:children) => {
 export default function ProtectedLayout({children}:children){
 
     return(
-        <Suspense fallback={<div>Loading.....</div>}>
+        <Suspense fallback={<Loader />}>
             <ProtectedContent>
                 <div className="flex min-h-screen">
                     

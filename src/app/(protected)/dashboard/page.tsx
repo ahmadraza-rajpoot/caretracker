@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import DashboardContent from "@/components/DashboardContent";
 import NoOrganization from "@/components/noOrganizations";
+import Loader from "@/components/Loader";
 
 
 export default function ProtectedDashboard() {
@@ -11,8 +12,13 @@ export default function ProtectedDashboard() {
   }
 
   return (
-    <Suspense fallback={<div className="h-16 animate-pulse border-b bg-muted/30" > Loading..</div> }>
-      <DashboardContent />
+    <Suspense fallback={<Loader/>}>
+      
+      <main className="bg-[#F8FAFC] h-full">
+        <DashboardContent />
+      </main>
+      
+      
     </Suspense>
   );
 }

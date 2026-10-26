@@ -4,7 +4,7 @@ import { Building2, Plus } from "lucide-react";
 
 
 type MembershipWithOrg = {
-  organizations: { org_name: string } | null;
+  organizations: { org_name: string , slug:string} | null;
 };
 
 const NavBar = async () => {
@@ -32,10 +32,7 @@ const NavBar = async () => {
     if (error) {
       console.error("Failed to fetch organization:", error.message);
     } else {
-      organizationName =
-        membership?.organizations?.org_name ?? "No organization";
-
-      console.log("Organization:", membership?.organizations);
+      organizationName = membership?.organizations?.org_name ?? "No organization";
     }
   }
 
