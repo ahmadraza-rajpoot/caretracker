@@ -1,14 +1,17 @@
+import { Suspense } from "react";
+import DashboardContent from "@/components/DashboardContent";
+import NoOrganization from "@/components/noOrganizations";
 
-import LogoutButton from "@/components/logoutButton"
-import SideBar from "@/components/sideBar";
-async function ProtectedDashboard() {
+export default function ProtectedDashboard() {
+  const hasOrganization = true;
 
+  if (!hasOrganization) {
+    return <NoOrganization />;
+  }
 
-    return (
-      <div>  
-        <h1>dashboard page</h1>
-      </div>
-    );
+  return (
+    <Suspense fallback={<div className="h-16 animate-pulse border-b bg-muted/30" > Loading..</div> }>
+      <DashboardContent />
+    </Suspense>
+  );
 }
-
-export default ProtectedDashboard;

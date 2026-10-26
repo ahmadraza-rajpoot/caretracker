@@ -51,3 +51,24 @@ export function validateLogin(data: loginData): string | null {
 
   return null
 }
+
+
+
+export function validateOrganization(
+  organizationName: string,
+  organizationSlug: string
+) {
+  if (!organizationName.trim()) {
+    return "Please enter an organization name.";
+  }
+
+  if (!organizationSlug.trim()) {
+    return "Please enter an organization slug.";
+  }
+
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(organizationSlug)) {
+    return "Slug must contain lowercase letters, numbers, and single hyphens only.";
+  }
+
+  return null;
+}

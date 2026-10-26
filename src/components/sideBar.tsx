@@ -8,7 +8,7 @@ import {
   ClipboardCheck,
   FileText,
   Settings,
-  LogOut,
+  Building2 
 } from "lucide-react"
 
 import brandlogo from "@/assets/brandlogo.png"
@@ -29,6 +29,11 @@ const navItems = [
     label: "Find",
     href: "/findings",
     icon: FileText,
+  },
+  {
+    label: "Organizations",
+    href: "/organizations",
+    icon: Building2,
   },
   {
     label: "Settings",
