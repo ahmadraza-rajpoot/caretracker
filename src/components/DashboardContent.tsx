@@ -1,5 +1,7 @@
+
 import { connection } from "next/server";
 import NavBar from "@/components/NavBar";
+
 
 export default async function DashboardContent() {
   await connection();

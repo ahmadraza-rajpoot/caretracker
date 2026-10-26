@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import DashboardContent from "@/components/DashboardContent";
 import NoOrganization from "@/components/noOrganizations";
 
+
 export default function ProtectedDashboard() {
   const hasOrganization = true;
 
