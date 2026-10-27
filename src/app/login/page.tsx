@@ -63,7 +63,7 @@ const LoginPage = () => {
             const {data, error} = await supabse.auth.signUp({
                 email,
                 password,
-                options:{data:{name}}
+                options:{data:{full_name: name}}
             })
 
             if(error){
@@ -71,8 +71,8 @@ const LoginPage = () => {
                 return;
             }
 
-            console.log("start your signup..")
-            console.log(data)
+            
+            
             showToast("Please check your email", "Check your email and follow the process.")
             return;
         }

@@ -35,7 +35,7 @@ export default function ProtectedLayout({children}:children){
                     
                     <SideBar />
 
-                    <main className="flex-1">
+                    <main className="flex-1 ml-64 min-w-0">
                         {children}
                     </main>
                     

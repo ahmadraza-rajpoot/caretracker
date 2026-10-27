@@ -26,7 +26,7 @@ const navItems = [
     icon: ClipboardCheck,
   },
   {
-    label: "Find",
+    label: "Findings",
     href: "/findings",
     icon: FileText,
   },
@@ -48,7 +48,7 @@ const SideBar = () => {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-white px-3 py-4">
+    <aside className="fixed flex h-screen w-64 flex-col border-r bg-white px-3 py-4">
 
       {/* Logo */}
       <div className="flex items-center gap-2 px-2 pb-6">

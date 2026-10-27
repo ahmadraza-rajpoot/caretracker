@@ -1,8 +1,13 @@
+import AuditTable from "@/components/audits/AuditTable"
+import Header from "@/components/audits/Header"
 
 
 const Audits = () => {
   return (
-    <div>Audits page</div>
+    <div>
+      <Header />
+      <AuditTable />
+    </div>
   )
 }
 
