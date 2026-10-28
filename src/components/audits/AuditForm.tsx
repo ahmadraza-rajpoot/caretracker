@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { ArrowLeft, ClipboardCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { CreateAudit } from "@/app/(protected)/audits/create-audit/action";
 
 const departments = [
   "Emergency",
@@ -31,28 +33,22 @@ const statuses = [
   { label: "Completed", value: "completed" },
 ] as const;
 
-export default function CreateAuditForm() {
+const initialState = {
+  error: "",
+  success: false,
+};
 
+export default function CreateAuditForm() {
   const [title, setTitle] = useState("");
   const [department, setDepartment] = useState("");
   const [auditDate, setAuditDate] = useState("");
   const [status, setStatus] = useState("draft");
   const [description, setDescription] = useState("");
 
-  function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const audit = {
-      title,
-      department,
-      audit_date: auditDate,
-      status,
-      description,
-    };
-
-    console.log(audit);
-    // Next: save this audit to Supabase.
-  }
+  const [state, formAction, isPending] = useActionState(
+    CreateAudit,
+    initialState
+  );
 
   function handleReset() {
     setTitle("");
@@ -95,7 +91,7 @@ export default function CreateAuditForm() {
 
           <Separator className="my-7" />
 
-          <form onSubmit={handleSubmit} onReset={handleReset}>
+          <form action={formAction} onReset={handleReset}>
             <div className="space-y-6">
               {/* Audit Name */}
               <div className="space-y-2">
@@ -105,6 +101,7 @@ export default function CreateAuditForm() {
 
                 <Input
                   id="title"
+                  name="title"
                   placeholder="e.g. Fire Safety Compliance Audit"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -121,7 +118,9 @@ export default function CreateAuditForm() {
 
                   <Select
                     value={department}
-                    onValueChange={(value) => setDepartment(value ?? "")}
+                    onValueChange={(value) =>
+                      setDepartment(value ?? "")
+                    }
                     required
                   >
                     <SelectTrigger className="w-full">
@@ -136,6 +135,12 @@ export default function CreateAuditForm() {
                       ))}
                     </SelectContent>
                   </Select>
+
+                  <input
+                    type="hidden"
+                    name="department"
+                    value={department}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -145,6 +150,7 @@ export default function CreateAuditForm() {
 
                   <Input
                     id="auditDate"
+                    name="auditDate"
                     type="date"
                     value={auditDate}
                     onChange={(e) => setAuditDate(e.target.value)}
@@ -159,7 +165,10 @@ export default function CreateAuditForm() {
                   Status <span className="text-red-500">*</span>
                 </Label>
 
-                <Select value={status} onValueChange={(value) => setStatus(value ?? "")}>
+                <Select
+                  value={status}
+                  onValueChange={(value) => setStatus(value ?? "")}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -172,6 +181,8 @@ export default function CreateAuditForm() {
                     ))}
                   </SelectContent>
                 </Select>
+
+                <input type="hidden" name="status" value={status} />
               </div>
 
               {/* Description */}
@@ -180,6 +191,7 @@ export default function CreateAuditForm() {
 
                 <Textarea
                   id="description"
+                  name="description"
                   placeholder="Describe the audit's purpose, scope and any additional notes..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -188,19 +200,33 @@ export default function CreateAuditForm() {
               </div>
             </div>
 
+            {/* Server Action feedback */}
+            {state.error && (
+              <p role="alert" className="mt-4 text-sm text-red-600">
+                {state.error}
+              </p>
+            )}
+
+            {state.success && (
+              <p role="status" className="mt-4 text-sm text-green-600">
+                Audit created successfully!
+              </p>
+            )}
+
             <Separator className="my-7" />
 
             {/* Actions */}
             <div className="flex justify-end gap-3">
-              <Button type="reset" variant="outline">
+              <Button type="reset" variant="outline" disabled={isPending}>
                 Reset
               </Button>
 
               <Button
                 type="submit"
+                disabled={isPending}
                 className="bg-blue-600 text-white hover:bg-blue-700"
               >
-                Create Audit
+                {isPending ? "Creating..." : "Create Audit"}
               </Button>
             </div>
           </form>
