@@ -1,13 +1,22 @@
 import AuditTable from "@/components/audits/AuditTable"
 import Header from "@/components/audits/Header"
+import Loader from "@/components/Loader"
+import { getAuditData } from "@/lib/data/audits"
+import { connection } from "next/server"
+import { Suspense } from "react"
 
 
-const Audits = () => {
+const Audits = async () => {
+  await connection();
+  const auditData = await getAuditData()
+  
   return (
-    <div>
-      <Header />
-      <AuditTable />
-    </div>
+    <Suspense fallback={<Loader />}>
+      <div>
+        <Header />
+        <AuditTable auditData = {auditData} />
+      </div>
+    </Suspense>
   )
 }
 

@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+
+
+
+
 /* ----------------------------- Types & data ----------------------------- */
 
 type AuditStatus = "Draft" | "In progress" | "Completed";
@@ -122,8 +126,8 @@ function RowActions({
 
 /* ------------------------------ Main table ------------------------------ */
 
-export default function AuditsTable() {
-  const [audits, setAudits] = useState<Audit[]>(MOCK_AUDITS);
+export default function AuditsTable({auditData}) {
+  const [audits, setAudits] = useState<Audit[]>(auditData);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [department, setDepartment] = useState("");

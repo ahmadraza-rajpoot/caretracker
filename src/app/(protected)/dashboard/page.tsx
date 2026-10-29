@@ -5,10 +5,11 @@ import DashboardContent from "@/components/DashboardContent";
 import NoOrganization from "@/components/noOrganizations";
 import Loader from "@/components/Loader";
 import { getCurrentOrganization } from "@/lib/data/organization";
+import { getAuditData } from "@/lib/data/audits";
 
 async function DashboardData() {
   await connection();
-
+  
   const hasOrganization = await getCurrentOrganization();
 
   if (!hasOrganization) {
