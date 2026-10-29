@@ -35,3 +35,32 @@ export const getAuditData = cache( async ()=>{
 
    
 })
+
+
+export const getCurrentAuditData = cache(async (id:string)=>{
+
+    const organization = await getCurrentOrganization();
+
+    if(!organization){
+        return {
+            error:"No orgnization found"
+        }
+    }
+
+    const supabase = await createClient();
+
+    const {data, error} = await supabase.from("audits")
+    .select("title, department, audit_date, status, description")
+    .eq("id",id)
+    .eq("organization_id", organization.id)
+
+    if(error){
+        return {error: error.message}
+    }
+
+
+    console.log(data)
+    return {
+        data
+    }
+})

@@ -5,8 +5,8 @@ import { validateSignup, validateLogin } from "@/features/auth/auth"
 import { createClient } from "@/lib/supabse/client"
 
 import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/toast"
 
+import { showToast } from "@/lib/utils/showToast"
 import { useRouter } from "next/navigation"
 
 import {
@@ -28,19 +28,19 @@ const LoginPage = () => {
 
     const supabse = createClient()
 
-    const showToast = (title:string, msg:string)=>{
+    // const showToast = (title:string, msg:string)=>{
         
-        const id = toast.add({
-            title:title,
-            description:msg,
-            actionProps:{
-                children:"Undo",
-                onClick(){
-                    toast.close(id)
-                }
-            }
-        })
-    }
+    //     const id = toast.add({
+    //         title:title,
+    //         description:msg,
+    //         actionProps:{
+    //             children:"Undo",
+    //             onClick(){
+    //                 toast.close(id)
+    //             }
+    //         }
+    //     })
+    // }
 
     const handleSubmit = async (e:SubmitEvent<HTMLFormElement>) =>{
         e.preventDefault();

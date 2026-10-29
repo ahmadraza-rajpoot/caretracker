@@ -1,9 +1,8 @@
 
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { ArrowLeft, ClipboardCheck } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,12 +37,17 @@ const initialState = {
   success: false,
 };
 
-export default function CreateAuditForm() {
+export default function CreateAuditForm({data}) {
+  
+
   const [title, setTitle] = useState("");
   const [department, setDepartment] = useState("");
   const [auditDate, setAuditDate] = useState("");
-  const [status, setStatus] = useState("draft");
+  const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
+ 
+  
+  const isEditing = Boolean(data?.data?.[0]);
 
   const [state, formAction, isPending] = useActionState(
     CreateAudit,
@@ -57,6 +61,26 @@ export default function CreateAuditForm() {
     setStatus("draft");
     setDescription("");
   }
+
+  useEffect(() => {
+    const audit = data?.data?.[0];
+
+    if (!audit){
+
+      setTitle("");
+      setDepartment("");
+      setAuditDate( "");
+      setStatus("");
+      setDescription("");
+      return;
+    } 
+
+    setTitle(audit.title ?? "");
+    setDepartment(audit.department ?? "");
+    setAuditDate(audit.audit_date?.slice(0, 10) ?? "");
+    setStatus(audit.status ?? "");
+    setDescription(audit.description ?? "");
+  }, [data]);
 
   return (
     <div className="min-h-full bg-[#F8FAFC] w-200 p-6 md:p-8">
@@ -80,10 +104,10 @@ export default function CreateAuditForm() {
 
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-                Create Audit
+                {isEditing?"Update the Audit":"Create Audit"}
               </h1>
               <p className="mt-1 text-sm text-slate-500">
-                Create a new audit for your organization&apos;s compliance
+                {isEditing?"Update the audit ":"Create a new audit "} for your organization&apos;s compliance
                 activities.
               </p>
             </div>
@@ -226,7 +250,7 @@ export default function CreateAuditForm() {
                 disabled={isPending}
                 className="bg-blue-600 text-white hover:bg-blue-700"
               >
-                {isPending ? "Creating..." : "Create Audit"}
+                {isEditing?isPending ?"Updating...":"Update Audit":isPending ? "Creating..." : "Create Audit"}
               </Button>
             </div>
           </form>

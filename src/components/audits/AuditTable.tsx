@@ -1,6 +1,9 @@
 'use client'
 
+import { deleteAudit } from "@/app/(protected)/audits/action";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/utils/showToast";
 
 
 
@@ -10,36 +13,28 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 type AuditStatus = "Draft" | "In progress" | "Completed";
 
-interface Audit {
-  id: string;
-  name: string;
-  department: string;
-  auditDate: string; // ISO date
-  status: AuditStatus;
-  createdBy: string;
-  findings: number;
-}
+
 
 const STATUSES: AuditStatus[] = ["Draft", "In progress", "Completed"];
 const DEPARTMENTS = ["Finance", "HR", "IT", "Operations", "Legal", "Sales"];
 
 // Replace with data from your API
-const MOCK_AUDITS: Audit[] = [
-  { id: "1", name: "Q1 Financial Controls", department: "Finance", auditDate: "2026-01-14", status: "Completed", createdBy: "Sara Khan", findings: 4 },
-  { id: "2", name: "Employee Onboarding Compliance", department: "HR", auditDate: "2026-02-03", status: "Completed", createdBy: "Ali Raza", findings: 2 },
-  { id: "4", name: "Vendor Contract Audit", department: "Legal", auditDate: "2026-03-09", status: "In progress", createdBy: "Usman Tariq", findings: 3 },
+// const MOCK_AUDITS: Audit[] = [
+//   { id: "1", name: "Q1 Financial Controls", department: "Finance", auditDate: "2026-01-14", status: "Completed", createdBy: "Sara Khan", findings: 4 },
+//   { id: "2", name: "Employee Onboarding Compliance", department: "HR", auditDate: "2026-02-03", status: "Completed", createdBy: "Ali Raza", findings: 2 },
+//   { id: "4", name: "Vendor Contract Audit", department: "Legal", auditDate: "2026-03-09", status: "In progress", createdBy: "Usman Tariq", findings: 3 },
 
-  { id: "6", name: "Sales Commission Accuracy", department: "Sales", auditDate: "2026-04-02", status: "Draft", createdBy: "Bilal Ahmed", findings: 0 },
+//   { id: "6", name: "Sales Commission Accuracy", department: "Sales", auditDate: "2026-04-02", status: "Draft", createdBy: "Bilal Ahmed", findings: 0 },
 
-  { id: "9", name: "Data Privacy Assessment", department: "Legal", auditDate: "2026-05-19", status: "Draft", createdBy: "Usman Tariq", findings: 0 },
-  { id: "10", name: "Expense Policy Adherence", department: "Finance", auditDate: "2026-06-04", status: "Completed", createdBy: "Ali Raza", findings: 6 },
-  { id: "11", name: "Recruitment Process Review", department: "HR", auditDate: "2026-06-22", status: "In progress", createdBy: "Ayesha Noor", findings: 2 },
+//   { id: "9", name: "Data Privacy Assessment", department: "Legal", auditDate: "2026-05-19", status: "Draft", createdBy: "Usman Tariq", findings: 0 },
+//   { id: "10", name: "Expense Policy Adherence", department: "Finance", auditDate: "2026-06-04", status: "Completed", createdBy: "Ali Raza", findings: 6 },
+//   { id: "11", name: "Recruitment Process Review", department: "HR", auditDate: "2026-06-22", status: "In progress", createdBy: "Ayesha Noor", findings: 2 },
 
-  { id: "13", name: "Customer Refund Process", department: "Sales", auditDate: "2026-07-25", status: "Completed", createdBy: "Hina Malik", findings: 3 },
+//   { id: "13", name: "Customer Refund Process", department: "Sales", auditDate: "2026-07-25", status: "Completed", createdBy: "Hina Malik", findings: 3 },
  
-  { id: "15", name: "Licensing & Permits", department: "Legal", auditDate: "2026-09-01", status: "Draft", createdBy: "Sara Khan", findings: 0 },
-  { id: "16", name: "Inventory Count Verification", department: "Operations", auditDate: "2026-09-17", status: "In progress", createdBy: "Usman Tariq", findings: 4 },
-];
+//   { id: "15", name: "Licensing & Permits", department: "Legal", auditDate: "2026-09-01", status: "Draft", createdBy: "Sara Khan", findings: 0 },
+//   { id: "16", name: "Inventory Count Verification", department: "Operations", auditDate: "2026-09-17", status: "In progress", createdBy: "Usman Tariq", findings: 4 },
+// ];
 
 const PAGE_SIZE_OPTIONS = [5, 10, 25];
 
@@ -126,13 +121,30 @@ function RowActions({
 
 /* ------------------------------ Main table ------------------------------ */
 
-export default function AuditsTable({auditData}) {
+type Audit = {
+  id: string;
+  name: string;
+  department: string;
+  auditDate: string;
+  status: "Completed" | "In progress" | "Draft";
+  createdBy: string;
+  findings: number;
+};
+
+type AuditsTableProps = {
+  auditData: Audit[];
+};
+
+export default function AuditsTable({auditData}:AuditsTableProps) {
+
+
   const [audits, setAudits] = useState<Audit[]>(auditData);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [department, setDepartment] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const router = useRouter();
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -160,12 +172,35 @@ export default function AuditsTable({auditData}) {
 
   // Hook these up to your router / modals / API
   const handleView = (a: Audit) => console.log("View", a.id);
-  const handleEdit = (a: Audit) => console.log("Edit", a.id);
-  const handleDelete = (a: Audit) => {
-    if (window.confirm(`Delete "${a.name}"? This can't be undone.`)) {
-      setAudits((prev) => prev.filter((x) => x.id !== a.id));
-    }
+
+  const handleEdit = (a: Audit) => {
+    router.push(`/audits/create-audit?id=${encodeURIComponent(a.id)}`)
   };
+
+ const handleDelete = async (a: Audit) => {
+  const confirmed = window.confirm(
+    `Delete "${a.name}"? This can't be undone.`
+  );
+
+  if (!confirmed) return;
+
+  const result = await deleteAudit(a.id);
+
+  if (result?.error) {
+    alert(result.error);
+    showToast("Error while deleting", result.error)
+    return;
+  }
+
+  // Remove the deleted row immediately from the client UI
+  setAudits((current) =>
+    current.filter((audit) => audit.id !== a.id)
+  );
+
+  showToast("Audit Deleted", "Audited has been delted successfully")
+  // Refresh server-rendered data
+  router.refresh();
+};
 
   const control =
     "h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30";
