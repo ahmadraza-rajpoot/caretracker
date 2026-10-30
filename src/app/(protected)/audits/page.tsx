@@ -4,6 +4,7 @@ import Loader from "@/components/Loader";
 import { getAuditData } from "@/lib/data/audits";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { randomUUID } from "crypto";
 
 type AuditStatus = "Draft" | "In progress" | "Completed";
 interface Audit {
@@ -22,7 +23,7 @@ async function AuditData() {
 
 
 
-  return <AuditTable auditData={auditData} />;
+  return <AuditTable key={randomUUID()} auditData={auditData} />;
 }
 
 const Audits = () => {

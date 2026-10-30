@@ -2,10 +2,12 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { ArrowLeft, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Undo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast"
+
 
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +20,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { CreateAudit } from "@/app/(protected)/audits/create-audit/action";
+import { showToast } from "@/lib/utils/showToast";
 
 const departments = [
   "Emergency",
@@ -59,21 +62,39 @@ type CreateAuditFormProps = {
 
 export default function CreateAuditForm({data, id}:CreateAuditFormProps) {
   
+ const [state, formAction, isPending] = useActionState(
+    CreateAudit,
+    initialState
+  );
 
   const [title, setTitle] = useState("");
   const [department, setDepartment] = useState("");
   const [auditDate, setAuditDate] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
-  const router = useRouter();
+  const [popUp, setPopUp] = useState(true)
  
   
   const isEditing = Boolean( data && "data" in data && data.data?.[0]);
 
-  const [state, formAction, isPending] = useActionState(
-    CreateAudit,
-    initialState
-  );
+ 
+
+
+ useEffect(() => {
+    if(state.success && popUp){
+      
+      if(isEditing){
+        showToast("Updated","Audit has been updated.")
+      }else{
+        showToast("Created", "Audit has been created")
+      }
+      setPopUp(false)
+  }
+
+
+}, [popUp, state.success]);
+
+
 
   function handleReset() {
     setTitle("");
@@ -102,11 +123,6 @@ useEffect(() => {
   setDescription(audit.description ?? "");
 }, [data]);
 
-useEffect(() => {
-  if (state.success) {
-    router.push("/audits");
-  }
-}, [state.success, router]);
 
   return (
     <div className="min-h-full bg-[#F8FAFC] w-200 p-6 md:p-8">
@@ -142,7 +158,7 @@ useEffect(() => {
           <Separator className="my-7" />
 
           <form action={formAction} onReset={handleReset}>
-            <input type="hidden" name="auditId" value={id} />
+            <input type="hidden" name="auditId" value={id ?? ""} />
             <div className="space-y-6">
               {/* Audit Name */}
               <div className="space-y-2">
@@ -238,9 +254,12 @@ useEffect(() => {
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description
+                  <span className="text-red-500">*</span>
+                </Label>
 
                 <Textarea
+                required = {true}
                   id="description"
                   name="description"
                   placeholder="Describe the audit's purpose, scope and any additional notes..."
@@ -255,12 +274,6 @@ useEffect(() => {
             {state.error && (
               <p role="alert" className="mt-4 text-sm text-red-600">
                 {state.error}
-              </p>
-            )}
-
-            {state.success && (
-              <p role="status" className="mt-4 text-sm text-green-600">
-                Audit created successfully!
               </p>
             )}
 
