@@ -21,7 +21,7 @@ async function AuditDataCom({
     ? await getCurrentAuditData(id)
     : null;
 
-  return <CreateAuditForm data={data} />;
+  return <CreateAuditForm data={data} id={id} />;
 }
 
 export default function Page({ searchParams }: PageProps) {

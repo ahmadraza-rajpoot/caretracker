@@ -215,6 +215,10 @@ export default function AuditsTable({auditData}:AuditsTableProps) {
     return pages;
   }, [totalPages, currentPage]);
 
+  useEffect(()=>{
+    setAudits(auditData)
+  },[auditData])
+
   return (
     <div className="mx-auto w-full max-w-6xl p-4 sm:p-6">
 

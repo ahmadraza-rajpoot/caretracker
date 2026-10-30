@@ -26,7 +26,6 @@ async function AuditData() {
 }
 
 const Audits = () => {
-  
 
   return (
     <div>

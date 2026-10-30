@@ -6,6 +6,8 @@ import { ArrowLeft, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
+import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -37,7 +39,25 @@ const initialState = {
   success: false,
 };
 
-export default function CreateAuditForm({data}) {
+type Audit = {
+  title: string;
+  department: string;
+  audit_date: string;
+  status: string;
+  description: string | null;
+};
+
+type AuditDataResult =
+  | { data: Audit[] }
+  | { error: string };
+
+type CreateAuditFormProps = {
+  data: AuditDataResult | null;
+  id?: string;
+};
+
+
+export default function CreateAuditForm({data, id}:CreateAuditFormProps) {
   
 
   const [title, setTitle] = useState("");
@@ -45,9 +65,10 @@ export default function CreateAuditForm({data}) {
   const [auditDate, setAuditDate] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
+  const router = useRouter();
  
   
-  const isEditing = Boolean(data?.data?.[0]);
+  const isEditing = Boolean( data && "data" in data && data.data?.[0]);
 
   const [state, formAction, isPending] = useActionState(
     CreateAudit,
@@ -62,25 +83,30 @@ export default function CreateAuditForm({data}) {
     setDescription("");
   }
 
-  useEffect(() => {
-    const audit = data?.data?.[0];
+useEffect(() => {
+  const audit = data && "data" in data ? data.data?.[0] : null;
 
-    if (!audit){
+  if (!audit) {
+    setTitle("");
+    setDepartment("");
+    setAuditDate("");
+    setStatus("");
+    setDescription("");
+    return;
+  }
 
-      setTitle("");
-      setDepartment("");
-      setAuditDate( "");
-      setStatus("");
-      setDescription("");
-      return;
-    } 
+  setTitle(audit.title ?? "");
+  setDepartment(audit.department ?? "");
+  setAuditDate(audit.audit_date?.slice(0, 10) ?? "");
+  setStatus(audit.status ?? "");
+  setDescription(audit.description ?? "");
+}, [data]);
 
-    setTitle(audit.title ?? "");
-    setDepartment(audit.department ?? "");
-    setAuditDate(audit.audit_date?.slice(0, 10) ?? "");
-    setStatus(audit.status ?? "");
-    setDescription(audit.description ?? "");
-  }, [data]);
+useEffect(() => {
+  if (state.success) {
+    router.push("/audits");
+  }
+}, [state.success, router]);
 
   return (
     <div className="min-h-full bg-[#F8FAFC] w-200 p-6 md:p-8">
@@ -116,6 +142,7 @@ export default function CreateAuditForm({data}) {
           <Separator className="my-7" />
 
           <form action={formAction} onReset={handleReset}>
+            <input type="hidden" name="auditId" value={id} />
             <div className="space-y-6">
               {/* Audit Name */}
               <div className="space-y-2">
