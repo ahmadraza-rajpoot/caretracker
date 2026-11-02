@@ -11,12 +11,20 @@ import { showToast } from "@/lib/utils/showToast";
 
 /* ----------------------------- Types & data ----------------------------- */
 
-type AuditStatus = "Draft" | "In progress" | "Completed";
+type AuditStatus = "draft" | "in-progress" | "completed";
 
 
 
-const STATUSES: AuditStatus[] = ["Draft", "In progress", "Completed"];
-const DEPARTMENTS = ["Finance", "HR", "IT", "Operations", "Legal", "Sales"];
+const STATUSES: AuditStatus[] = ["draft", "in-progress", "completed"];
+
+const DEPARTMENTS = [
+  "Emergency",
+  "Nursing",
+  "Pharmacy",
+  "Laboratory",
+  "Administration",
+  "Facilities",
+];
 
 // Replace with data from your API
 // const MOCK_AUDITS: Audit[] = [
@@ -39,9 +47,9 @@ const DEPARTMENTS = ["Finance", "HR", "IT", "Operations", "Legal", "Sales"];
 const PAGE_SIZE_OPTIONS = [5, 10, 25];
 
 const STATUS_STYLES: Record<AuditStatus, string> = {
-  Draft: "bg-slate-100 text-slate-700 ring-slate-200",
-  "In progress": "bg-blue-50 text-blue-700 ring-blue-200",
-  Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  draft: "bg-slate-100 text-slate-700 ring-slate-200",
+  "in-progress": "bg-blue-50 text-blue-700 ring-blue-200",
+  completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
 };
 
 /* ------------------------------- Helpers -------------------------------- */
@@ -126,7 +134,7 @@ type Audit = {
   name: string;
   department: string;
   auditDate: string;
-  status: "Completed" | "In progress" | "Draft";
+  status: "completed" | "in-progress" | "draft";
   createdBy: string;
   findings: number;
 };

@@ -45,20 +45,31 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     // 4. Fetch audit
     const { data: audit, error } = await supabase
-      .from("audits")
-      .select(`
-        id,
-        title,
-        description,
-        status,
-        department,
-        audit_date,
-        created_at,
-        profiles(full_name),
-        organizations(org_name)
-      `)
-      .eq("id", id)
-      .maybeSingle();
+  .from("audits")
+  .select(`
+    id,
+    title,
+    description,
+    status,
+    department,
+    audit_date,
+    created_at,
+    profiles(full_name),
+    organizations(org_name),
+    findings(
+      *,
+      assigned_user:profiles!findings_assigned_to_profile_fkey(
+        user_id,
+        full_name
+      ),
+      creator:profiles!findings_created_by_profile_fkey(
+        user_id,
+        full_name
+      )
+    )
+  `)
+  .eq("id", id)
+  .maybeSingle();
 
     // 5. Handle database errors
     if (error) {
