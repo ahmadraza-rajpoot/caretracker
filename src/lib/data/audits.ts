@@ -10,7 +10,7 @@ export const getAuditData = cache( async ()=>{
     
     const {data, error} = await supabase.from("audits")
     .select("*, profiles(full_name)")
-    .eq("organization_id", organization?.id)
+    .eq("organization_id", organization?.id).order("created_at",{ascending:false})
 
     if(error){
         console.log("Error while fetching audit data")
@@ -29,7 +29,7 @@ export const getAuditData = cache( async ()=>{
         }
     ))
 
-    console.log(auditData)
+    //console.log(auditData)
 
     return auditData
 

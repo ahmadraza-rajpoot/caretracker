@@ -170,8 +170,9 @@ export default function AuditsTable({auditData}:AuditsTableProps) {
     setPage(1);
   };
 
-  // Hook these up to your router / modals / API
-  const handleView = (a: Audit) => console.log("View", a.id);
+  const handleView = (a: Audit) => {
+    router.push(`/audits/view-audit/${a.id}`)
+  }
 
   const handleEdit = (a: Audit) => {
     router.push(`/audits/create-audit?id=${encodeURIComponent(a.id)}`)

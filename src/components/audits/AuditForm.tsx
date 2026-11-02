@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
@@ -6,10 +5,8 @@ import { ArrowLeft, ClipboardCheck, Undo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/toast"
 
 
-import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -20,7 +17,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { CreateAudit } from "@/app/(protected)/audits/create-audit/action";
-import { showToast } from "@/lib/utils/showToast";
 
 const departments = [
   "Emergency",
@@ -72,29 +68,8 @@ export default function CreateAuditForm({data, id}:CreateAuditFormProps) {
   const [auditDate, setAuditDate] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
-  const [popUp, setPopUp] = useState(true)
  
-  
   const isEditing = Boolean( data && "data" in data && data.data?.[0]);
-
- 
-
-
- useEffect(() => {
-    if(state.success && popUp){
-      
-      if(isEditing){
-        showToast("Updated","Audit has been updated.")
-      }else{
-        showToast("Created", "Audit has been created")
-      }
-      setPopUp(false)
-  }
-
-
-}, [popUp, state.success]);
-
-
 
   function handleReset() {
     setTitle("");
