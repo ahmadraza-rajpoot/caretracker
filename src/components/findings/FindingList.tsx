@@ -118,7 +118,7 @@ function Pill({
 
 export default function FindingsList({
   findings,
-  addHref = "/findings/new",
+  addHref = "/findings/create-finding",
 }: FindingsListProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
@@ -129,7 +129,7 @@ export default function FindingsList({
         </h2>
 
         <Link
-          href={addHref}
+          href={"/findings/create-finding"}
           className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
@@ -152,7 +152,7 @@ export default function FindingsList({
             return (
               <li key={finding.id}>
                 <Link
-                  href={`/findings/${finding.id}`}
+                  href={`/findings/view-finding/${finding.id}`}
                   className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-indigo-50/40 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
                 >
                   {/* Left: title, description, pills */}

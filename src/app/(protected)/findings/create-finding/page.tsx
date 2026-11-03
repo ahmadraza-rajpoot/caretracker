@@ -19,9 +19,9 @@ const page = () => {
 
 
   return (
-    <div>page
+    <div>
 
-        <FindingForm audits={audits} users={users} />
+      <FindingForm audits={audits} users={users} />
     </div>
   )
 }

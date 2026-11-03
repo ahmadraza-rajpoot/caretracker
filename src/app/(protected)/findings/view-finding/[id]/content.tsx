@@ -3,22 +3,71 @@
 import { useState } from "react";
 import { Finding } from "./page";
 import { capitalize, formatText } from "@/lib/utils/customMethods";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/utils/showToast";
+
+
+type FindingStatus = "open" | "in-progress" | "resolved";
 
 type findingParam = {
-    finding:Finding
+    finding:Finding,
+    id:string,
+    onStatusUpdate:(status: FindingStatus) => void;
 }
 
 const severityColor = {
-    low:"text-green-700 ring-green-200",
-    medium:"text-yellow-700 ring-yellow-200",
-    high:"text-red-700 ring-red-200"
+    low:"text-green-700 ring-green-200 bg-green-50",
+    medium:"text-yellow-700 ring-yellow-200 bg-yellow-50",
+    high:"text-red-700 ring-red-200 bg-red-50"
 }
+type StatusLabel = "Open" | "In Progress" | "Resolved";
 
-const Content = ({finding}:findingParam) => {
+const Content = ({finding, id, onStatusUpdate}:findingParam) => {
     
     const [btnText, setBtnText] = useState(formatText(finding.status))
     
     const status = ["Open", "In Progress", "Resolved"];
+    const router= useRouter()
+
+    const apiStatus: Record<StatusLabel, string> = {
+        Open: "open",
+        "In Progress": "in-progress",
+        Resolved: "resolved",
+    };
+
+const updateStatus = async (newStatus:FindingStatus) => {
+  try {
+    const status = apiStatus[btnText as StatusLabel];
+
+    if (!status) {
+      console.error("Invalid status");
+      return;
+    }
+
+    const res = await fetch(`/api/findings/view-finding/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data.message || "Failed to update status");
+      return;
+    }
+    onStatusUpdate(newStatus)
+    console.log(data);
+    showToast("Status Updated", "Status has been udpated successfully")
+    router.refresh();
+  } catch (error) {
+    console.error("Error updating finding status:", error);
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -38,7 +87,7 @@ const Content = ({finding}:findingParam) => {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className={ `rounded-full bg-red-50 px-3 py-1 text-sm font-medium ${severityColor[finding.severity]} ring-1 ring-inset`}>
+              <span className={ `rounded-full px-3 py-1 text-sm font-medium ${severityColor[finding.severity]} ring-1 ring-inset`}>
                 {capitalize(finding.severity)} Severity
               </span>
 
@@ -95,7 +144,7 @@ const Content = ({finding}:findingParam) => {
 
               </div>
 
-                <button className="w-40 mt-6 rounded-sm hover:cursor-pointer h-10 bg-indigo-600 text-white">Update Status</button>
+                <button onClick={()=>updateStatus(btnText as FindingStatus)} className="w-40 mt-6 rounded-sm hover:cursor-pointer h-10 bg-indigo-600 text-white">Update Status</button>
 
             </div>
 

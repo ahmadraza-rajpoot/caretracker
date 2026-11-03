@@ -94,6 +94,70 @@ export async function GET(
 }
 
 
-export async function PATCH(){
-    
+export async function PATCH(
+    req: Request,
+    { params }:RouteContext
+) {
+    try {
+
+        const { id } = await params;
+
+        if (!isValidUUID(id)) {
+            return Response.json(
+                { success: false, message: "Invalid finding ID." },
+                { status: 400 }
+            );
+        }
+
+        const { status } = await req.json();
+       
+        const allowedStatuses = ["open", "in-progress", "resolved"];
+
+        if (!allowedStatuses.includes(status)) {
+            return Response.json(
+                { success: false, message: "Invalid status." },
+                { status: 400 }
+            );
+        }
+
+        const supabase = await createClient();
+
+        const { data, error } = await supabase
+            .from("findings")
+            .update({ status })
+            .eq("id", id)
+            .select("id, status")
+            .maybeSingle();
+
+        if (error) {
+            return Response.json(
+                { success: false, message: error.message },
+                { status: 500 }
+            );
+        }
+
+        if (!data) {
+            return Response.json(
+                { success: false, message: "Finding not found." },
+                { status: 404 }
+            );
+        }
+
+        return Response.json({
+            success: true,
+            message: "Finding status updated successfully.",
+            data
+        });
+
+    } catch (error) {
+        return Response.json(
+            {
+                success: false,
+                message: error instanceof Error
+                    ? error.message
+                    : "Something went wrong."
+            },
+            { status: 500 }
+        );
+    }
 }
