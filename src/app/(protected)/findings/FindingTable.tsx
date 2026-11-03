@@ -301,7 +301,7 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
 
                   <td className="px-4 py-3 text-right">
                     <Link
-                      href={`/findings/${finding.id}`}
+                      href={`/findings/view-finding/${finding.id}`}
                       aria-label={`View finding: ${finding.title}`}
                       title="View finding"
                       className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-indigo-50 text-indigo-700 transition-colors hover:bg-indigo-100"
